@@ -1,5 +1,5 @@
-## RM690B0-driver-for-microPython
-------------------------------
+## Lilygo Amoled Series Micropython firmware with Graphic Support (not LVGL)
+----------------------------------------------------------------------------
 
 It's dedicated to 
                   Lilygo T4-S3 AMOLED wired with QSPI
@@ -19,7 +19,7 @@ The driver involves a frame buffer of 600x450, requiring 540ko of available ram.
 
 Contents:
 
-- [RM690B0 Driver for MicroPython](#RM690B0-driver-for-microPython)
+- [Lilygo Amoled Series Micropython firmware with Graphic Support (not LVGL)
 - [Introduction](#introduction)
 - [Features](#features)
 - [Documentation](#documentation) 
@@ -50,10 +50,14 @@ The firmware is provided each time when I update this repo.
 - fill
 - rect
 - fill_rect
+- trian
+- fill_tria
 - bubble_rect
 - fill_bubble_rect
 - circle
 - fill_circle
+- polygons
+- fill_polygons
 - fast_hline
 - fast_vline
 - line
@@ -62,12 +66,12 @@ The firmware is provided each time when I update this repo.
 - rotation
 
 ## to check : 
-- polygons
-- filled_polygons
+- As far as I know everything is working as expected
 
 ## To-DO List : 
-- png support (the same)
-- track somesmall bugs
+- png support
+- optimize triangle function
+- optimize what can be optimized
 
 ## Features
 
@@ -81,12 +85,15 @@ Supported boards：
 | Driver IC | Display IC |    SPI    |   QSPI    |   I8080   |   DPI     |
 | --------- | ---------- | --------- | --------- | --------- | --------- |
 | ESP32-S3  |  RM690B0   |    NO     |   YES     |    NO     |    NO     |
+| ESP32-S3  |  RM67162   |    NO     |   YES     |    NO     |    NO     |
 
 
 ## Documentation
-In general, the screen starts at 0 and goes to 599 x 449, that's a total resolution of 600 x 450. All drawing functions should be called with this in mind.
+In general, the screen starts at 0 and goes to 599 x 449 for T4-S3 (resp 535 x 239 for T-Display S3), that's a total resolution of 600 x 450 (resp 536 x 240).
+All drawing functions should be called with this in mind.
 
-- `rm690b0.COLOR`
+
+- `amoled.COLOR`
 
   This returns a predefined color that can be directly used for drawing. Available options are: BLACK, BLUE, RED, GREEN, CYAN, MAGENTA, YELLOW, WHITE
 
@@ -175,6 +182,14 @@ In general, the screen starts at 0 and goes to 599 x 449, that's a total resolut
 
   Draw a rectangle starting from (x, y) with the width w and height h of the color.
 
+  - `fill_trian(x1, y1, x2, y2, x3, y3, color)`
+
+  Draw a triangle starting from fill it with the color.
+
+- `trian(x1, y1, x2, y2, x3, y3, color)`
+
+  Draw a triangle starting of the color without filling it.
+
 - `fill_bubble_rect(x, y, w, h, color)`
 
   Draw a rounded text-bubble-like rectangle starting from (x, y) with the width w and height h and fill it with the color.
@@ -223,11 +238,11 @@ In general, the screen starts at 0 and goes to 599 x 449, that's a total resolut
 This is only for reference. Since esp-idf v5.0.2, you must state the full path to the cmake file in order for the builder to find it.
 ```Shell
 cd ~
-git clone https://github.com/dobodu/RM690B0_Micropython_QSPI.git
+git clone https://github.com/dobodu/Lilygo-Amoled-Micropython.git
 
 # to the micropython directory
 cd micropython/port/esp32
-make  BOARD=ESP32_GENERIC_S3 BOARD_VARIANT=FLASH_16M_SPIRAM_OCT USER_C_MODULE=~/RM690B0_Micropython_QSPI/rm690b0/micropython.cmake
+make  BOARD=ESP32_GENERIC_S3 BOARD_VARIANT=FLASH_16M_SPIRAM_OCT USER_C_MODULE=~/Lilygo-Amoled-Micropython/amoled/micropython.cmake
 ```
 You may also want to modify the `sdkconfig` before building in case to get the 16MB storage.
 ```Shell
