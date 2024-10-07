@@ -1,34 +1,32 @@
-RM69090 Driver for MicroPython
+## RM690B0-driver-for-microPython
 ------------------------------
 
-This Micropython driver is created on behalf of [nspsck](https://github.com/nspsck/RM67162_Micropython_QSPI) RM67162 driver
-
-It's dedicated to Lilygo T4-S3 amoled display
-
-
-It is in debugging state for now...
+It's dedicated to 
+                  Lilygo T4-S3 AMOLED wired with QSPI
+                  Lilygo T-Display S3 AMOLED wired with QSPI
 
 
+This Micropython driver is created on behalf of [nspsck](https://github.com/nspsck/RM67162_Micropython_QSPI) RM67162 driver.
 
+It is also convergent with [russhugues](https://github.com/russhughes/st7789_mpy) ST7789 driver.
 
+I also would like to thanks [lewisxhe](https://github.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series). Your advices helped me a lot.
 
-# Note: 
-Scrolling does not work. Maybe using a framebuffer (provided by Micropython) to scroll will work.
+My main goal was to adapt a driver library that would give the same functions thant ST7789 driver, in order to
+be able to get my micropythons projects working whether on PICO + ST7789 or ESP32 + RM690B0
+
+The driver involves a frame buffer of 600x450, requiring 540ko of available ram. 
 
 Contents:
 
-- [RM67162 Driver for MicroPython](#rm67162-driver-for-microPython)
+- [RM690B0 Driver for MicroPython](#RM690B0-driver-for-microPython)
 - [Introduction](#introduction)
 - [Features](#features)
 - [Documentation](#documentation) 
 - [How to build](#build)
 - [Optional Scripts](#optional-scripts)
 
-# Newer versio Lilygo AMOLED S3
-According to [Issue#2](https://github.com/nspsck/RM67162_Micropython_QSPI/issues/2), apparently, you have to set `IO38` High for the display to work on newer versions. Huge thanks go to [dobodu](https://github.com/dobodu) to bring this up and [lewisxhe](https://github.com/lewisxhe) for providing the solution. 
 
-# SPI Version
-There is a SPI version of this firmware provided by [gampam2000](https://github.com/gampam2000/RM67162_Micropyton_SPI). Thank you for sharing your work!
 
 ## Introduction
 This is the successor of the previous [lcd_binding_micropython](https://github.com/nspsck/lcd_binding_micropython). 
@@ -36,33 +34,59 @@ It is reconstructed to be more straightforward to develop on, and this allows me
 
 This driver is based on [esp_lcd](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/lcd.html).
 
-Available functions: `fill, fill_rect, rect, fill_cirlce, cirlce, pixel, vline, hline, colorRGB, bitmap, brightness, line, text, write, write_len` etc.
+Available functions: `fill, fill_rect, rect, fill_circle, circle, pixel, vline, hline, colorRGB, bitmap, brightness, line, text, text_len, write, write_len` etc.
 For full details please visit [the documentation](#documentation).
 
-All fonts are created by russhughes.
+Fixed spacing font was created by russhughes.
+Variable spacing font was created by myself
 
 The firmware is provided each time when I update this repo. 
 
-To-DO: (This is a lie. :c I hope I can find time to make this happen later in my life..)
-- png support
+## Working : 
+- text         monosized font
+- text_len
+- write        variable spacing font
+- write_len
+- fill
+- rect
+- fill_rect
+- bubble_rect
+- fill_bubble_rect
+- circle
+- fill_circle
+- fast_hline
+- fast_vline
+- line
+- jpg         display JPG image
+- brightness
+- rotation
+
+## to check : 
+- polygons
+- filled_polygons
+
+## To-DO List : 
+- png support (the same)
+- track somesmall bugs
 
 ## Features
 
 The following display driver ICs are supported:
-- Support for RM67162 displays
+- Support for RM690B0 displays
 
 Supported boards：
-- [LILYGO T-DisplayS3-AMOLED](https://github.com/Xinyuan-LilyGO/T-Display-S3-AMOLED)
+- [LILYGO T4 S3 AMOLED](https://www.lilygo.cc/products/t4-s3)
+- [LILYGO T-DISPLAY S3 AMOLED](https://www.lilygo.cc/products/t-display-s3-amoled)
 
-| Driver IC | Hardware SPI     | Software SPI     | Hardware QSPI    | I8080            | DPI(RGB)         |
-| --------- | ---------------- | ---------------- | ---------------- | ---------------- | ---------------- |
-| ESP32-S3  | [supported](https://github.com/gampam2000/RM67162_Micropyton_SPI)  | [supported](https://github.com/gampam2000/RM67162_Micropyton_SPI)   | supported  | no support   | no support   |
+| Driver IC | Display IC |    SPI    |   QSPI    |   I8080   |   DPI     |
+| --------- | ---------- | --------- | --------- | --------- | --------- |
+| ESP32-S3  |  RM690B0   |    NO     |   YES     |    NO     |    NO     |
 
 
 ## Documentation
-In general, the screen starts at 0 and goes to 535 x 239, that's a total resolution of 536 x 240. All drawing functions should be called with this in mind.
+In general, the screen starts at 0 and goes to 599 x 449, that's a total resolution of 600 x 450. All drawing functions should be called with this in mind.
 
-- `rm67162.COLOR`
+- `rm690b0.COLOR`
 
   This returns a predefined color that can be directly used for drawing. Available options are: BLACK, BLUE, RED, GREEN, CYAN, MAGENTA, YELLOW, WHITE
 
@@ -101,6 +125,11 @@ In general, the screen starts at 0 and goes to 535 x 239, that's a total resolut
 - `backlight_off()`
 
   Turn off the backlight, this is equal to `brightness(0)`.
+
+- `refresh()`
+
+  Force refresh of the whole screen. 
+  Use full when i it parameter auto_refresh=false has been used
 
 - `invert_color()`
 
@@ -170,7 +199,12 @@ In general, the screen starts at 0 and goes to 535 x 239, that's a total resolut
 
   Write text using bitmap fonts starting at (x, y) using foreground color `fg_color` and background color `bg_color`.
 
+- `text_len(bitmap_font, s)`
+
+  Returns the string's width in pixels if printed in the specified font.
+
 - `write(bitmap_font, s, x, y[, fg, bg, background_tuple, fill_flag])`
+
   Write text to the display using the specified proportional or Monospace bitmap font module with the coordinates as the upper-left corner of the text. The foreground and background colors of the text can be set by the optional arguments `fg` and `bg`, otherwise the foreground color defaults to `WHITE` and the background color defaults to `BLACK`.
 
   The `font2bitmap` utility creates compatible 1 bit per pixel bitmap modules from Proportional or Monospaced True Type fonts. The character size, foreground, background colors, and characters in the bitmap module may be specified as parameters. Use the -h option for details. If you specify a buffer_size during the display initialization, it must be large enough to hold the widest character (HEIGHT * MAX_WIDTH * 2).
@@ -189,11 +223,11 @@ In general, the screen starts at 0 and goes to 535 x 239, that's a total resolut
 This is only for reference. Since esp-idf v5.0.2, you must state the full path to the cmake file in order for the builder to find it.
 ```Shell
 cd ~
-git clone https://github.com/nspsck/RM67162_Micropython_QSPI.git
+git clone https://github.com/dobodu/RM690B0_Micropython_QSPI.git
 
 # to the micropython directory
 cd micropython/port/esp32
-make BOARD_VARIANT=SPIRAM_OCT  BOARD=ESP32_GENERIC_S3 USER_C_MODULES=~/RM67162_Micropython_QSPI/micropython.cmake
+make  BOARD=ESP32_GENERIC_S3 BOARD_VARIANT=FLASH_16M_SPIRAM_OCT USER_C_MODULE=~/RM690B0_Micropython_QSPI/rm690b0/micropython.cmake
 ```
 You may also want to modify the `sdkconfig` before building in case to get the 16MB storage.
 ```Shell
@@ -221,23 +255,8 @@ vim esp32_common.cmake
 ```
 Jump to line 105, or where ever `APPEND IDF_COMPONENTS` is located, add `esp_lcd` to the list should fix this.
 
-## Optional Scripts
 
-- `img_to_bytearray.py`
 
-  Convert an image to a Python bytearray bitmap that can be used with the `bitmap` function. Resizes images to fit on the 536x240 display of the RM67162 without changing the aspect ratio. Be sure to install [Pillow](https://pillow.readthedocs.io/en/stable/) before running this script.
-  
-  positional arguments:
-  - `image_path`            Path to the input image.
-  - `output_file`           (optional) Path to the output .py file. Defaults to the same path as input image with .py extension.
-
-  options:
-  -  `-h, --help`            show this help message and exit
-  - `-w WIDTH, --width WIDTH`
-                        Target width for the image. Default is 536.
-  - `-ht HEIGHT, --height HEIGHT`
-                        Target height for the image. Default is 240.
-  - `-d [CONVERTED_IMAGE_PATH], -debug [CONVERTED_IMAGE_PATH]`
-                        Path to save the resized image for debugging purposes. If no path is provided, the converted image will be saved as {input}_conv.png.
-
+# Note: 
+Scrolling does not work. Maybe using a framebuffer (provided by Micropython) to scroll will work.
 
