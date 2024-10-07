@@ -18,6 +18,11 @@ be able to get my micropythons projects working whether on PICO + ST7789 or ESP3
 The driver involves a frame buffer of 600x450, requiring 540ko of available ram (T4-S3 version).
 The driver involves a frame buffer of 536x240, requiring 280ko of available ram (TDisplay S3 version).
 
+Firmware is build with
+- Micropython 1.23
+- ESP IDF toolchain 5.2
+
+
 Contents:
 
 - [Lilygo Amoled Series Micropython firmware with Graphic Support](#Lilygo)
