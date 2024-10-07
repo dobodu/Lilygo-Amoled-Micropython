@@ -19,7 +19,7 @@ The driver involves a frame buffer of 600x450, requiring 540ko of available ram.
 
 Contents:
 
-- [Lilygo Amoled Series Micropython firmware with Graphic Support (not LVGL)
+- [Lilygo Amoled Series Micropython firmware with Graphic Support](#Lilygo)
 - [Introduction](#introduction)
 - [Features](#features)
 - [Documentation](#documentation) 
