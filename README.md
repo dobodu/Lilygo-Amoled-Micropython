@@ -13,9 +13,10 @@ It is also convergent with [russhugues](https://github.com/russhughes/st7789_mpy
 I also would like to thanks [lewisxhe](https://github.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series). Your advices helped me a lot.
 
 My main goal was to adapt a driver library that would give the same functions thant ST7789 driver, in order to
-be able to get my micropythons projects working whether on PICO + ST7789 or ESP32 + RM690B0
+be able to get my micropythons projects working whether on PICO + ST7789 or ESP32 + RM690B0 or ESP32 + RM67162
 
-The driver involves a frame buffer of 600x450, requiring 540ko of available ram. 
+The driver involves a frame buffer of 600x450, requiring 540ko of available ram (T4-S3 version).
+The driver involves a frame buffer of 536x240, requiring 280ko of available ram (TDisplay S3 version).
 
 Contents:
 
@@ -64,6 +65,7 @@ The firmware is provided each time when I update this repo.
 - jpg         display JPG image
 - brightness
 - rotation
+- and so on...
 
 ## to check : 
 - As far as I know everything is working as expected
