@@ -6,11 +6,8 @@ It's dedicated to
 - Lilygo T4-S3 AMOLED wired with QSPI
 - Lilygo T-Display S3 AMOLED wired with QSPI
 
-
 This Micropython driver is created on behalf of [nspsck](https://github.com/nspsck/RM67162_Micropython_QSPI) RM67162 driver.
-
 It is also convergent with [russhugues](https://github.com/russhughes/st7789_mpy) ST7789 driver.
-
 I also would like to thanks [lewisxhe](https://github.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series). Your advices helped me a lot.
 
 My main goal was to adapt a driver library that would give the same functions thant ST7789 driver, in order to
