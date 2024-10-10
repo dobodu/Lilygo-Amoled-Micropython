@@ -1,9 +1,10 @@
 ## Lilygo Amoled Series Micropython firmware with Graphic Support (not LVGL)
 ----------------------------------------------------------------------------
 
-It's dedicated to 
-                  Lilygo T4-S3 AMOLED wired with QSPI
-                  Lilygo T-Display S3 AMOLED wired with QSPI
+It's dedicated to
+
+-Lilygo T4-S3 AMOLED wired with QSPI
+-Lilygo T-Display S3 AMOLED wired with QSPI
 
 
 This Micropython driver is created on behalf of [nspsck](https://github.com/nspsck/RM67162_Micropython_QSPI) RM67162 driver.
