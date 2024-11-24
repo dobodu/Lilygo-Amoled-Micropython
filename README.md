@@ -251,7 +251,7 @@ make  BOARD=ESP32_GENERIC_S3 BOARD_VARIANT=FLASH_16M_SPIRAM_OCT USER_C_MODULE=~/
 ```
 You may also want to modify the `sdkconfig` before building in case to get the 16MB storage.
 ```Shell
-cd micropython/port/esp32
+cd micropython/ports/esp32
 # use the editor you prefer
 vim boards/ESP32_GENERIC_S3/sdkconfig.board 
 ```
