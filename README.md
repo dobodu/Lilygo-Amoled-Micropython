@@ -247,7 +247,7 @@ git clone https://github.com/dobodu/Lilygo-Amoled-Micropython.git
 
 # to the micropython directory
 cd micropython/port/esp32
-make  BOARD=ESP32_GENERIC_S3 BOARD_VARIANT=FLASH_16M_SPIRAM_OCT USER_C_MODULE=~/Lilygo-Amoled-Micropython/amoled/micropython.cmake
+make  BOARD=ESP32_GENERIC_S3 BOARD_VARIANT=FLASH_16M_SPIRAM_OCT USER_C_MODULE=~/Lilygo-Amoled-Micropython/amoled
 ```
 You may also want to modify the `sdkconfig` before building in case to get the 16MB storage.
 ```Shell
