@@ -1,4 +1,5 @@
 /* LILYGO AMOLED DRIVER FOR BOTH RM67162 AND RM690B0
+  and WAVESHARE SH8601 
 
 By Dobodu on behalf of 
 
@@ -13,9 +14,9 @@ https://github.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series
 
 This micropython C library is a standalone graphic library for
 
-Lilygo T-Display S3 Amoled boards
-and
-Lilygo T4-S3 Amoled boards.
+Lilygo T-Display S3 Amoled 1.91"
+Lilygo T4-S3 Amoled 2.4"
+Waveshare ESP32-S3 Touch Amoled 1.8"
 
 License if public*/
 
@@ -39,7 +40,7 @@ License if public*/
 #include <math.h>
 #include <wchar.h>
 
-#define AMOLED_DRIVER_VERSION "06.10.2024"
+#define AMOLED_DRIVER_VERSION "09.02.2025"
 
 #if MICROPY_VERSION >= MICROPY_MAKE_VERSION(1, 23, 0) 
 #undef STATIC
@@ -58,7 +59,7 @@ const char* color_space_desc[] = {
     "MONOCHROME"
 };
 
-/* Rotation memento 
+/* Rotation memento (for RM690B0 and RM67162, SH8601 does not support it)
 
 # = USB PORT
  
@@ -70,17 +71,24 @@ const char* color_space_desc[] = {
 
 // Rotation Matrix { madctl, width, height, colstart, rowstart }
 STATIC const amoled_rotation_t ORIENTATIONS_RM690B0[4] = {
-    { 0x00, 450, 600, 16, 0},
-    { 0x60, 600, 450, 0, 16},
-    { 0xC0, 450, 600, 16, 0},
-    { 0xA0, 600, 450, 0, 16}
+    { RM690B0_MADCTL_RGB,										  450, 600, 16, 0},
+    { RM690B0_MADCTL_MX | RM690B0_MADCTL_MV | RM690B0_MADCTL_RGB, 600, 450, 0, 16},
+    { RM690B0_MADCTL_MX | RM690B0_MADCTL_MY | RM690B0_MADCTL_RGB, 450, 600, 16, 0},
+    { RM690B0_MADCTL_MV | RM690B0_MADCTL_MY | RM690B0_MADCTL_RGB, 600, 450, 0, 16}
 };
 
 STATIC const amoled_rotation_t ORIENTATIONS_RM67162[4] = {
-    { 0x00, 240, 536, 0, 0},
-    { 0x60, 536, 240, 0, 0},
-    { 0xC0, 240, 536, 0, 0},
-    { 0xA0, 536, 240, 0, 0}
+    { RM67162_MADCTL_RGB,										  240, 536, 0, 0},
+    { RM67162_MADCTL_MX | RM67162_MADCTL_MV | RM67162_MADCTL_RGB, 536, 240, 0, 0},
+    { RM67162_MADCTL_MX | RM67162_MADCTL_MY | RM67162_MADCTL_RGB, 240, 536, 0, 0},
+    { RM67162_MADCTL_MV | RM67162_MADCTL_MY | RM67162_MADCTL_RGB, 536, 240, 0, 0}
+};
+
+STATIC const amoled_rotation_t ORIENTATIONS_SH8601[4] = {
+    { SH8601_MADCTL_RGB, 												368, 448, 0, 0},
+    { SH8601_MADCTL_X_FLIP | SH8601_MADCTL_RGB, 						368, 448, 0, 0},
+    { SH8601_MADCTL_Y_FLIP | SH8601_MADCTL_RGB, 						368, 448, 0, 0},
+    { SH8601_MADCTL_X_FLIP | SH8601_MADCTL_Y_FLIP | SH8601_MADCTL_RGB, 	368, 448, 0, 0}
 };
 
 int mod(int x, int m) {
@@ -208,7 +216,7 @@ mp_obj_t amoled_AMOLED_make_new(const mp_obj_type_t *type,
     self->lcd_panel_p = (amoled_panel_p_t *)self->bus_obj->type->protocol;
 #endif
 
-	//Display type 1 = T4-S3 RM690B0 and 0 = TDisplay S3 RM61672
+	//Display type 0 = TDisplay S3 RM61672 / 1 = T4-S3 RM690B0 / 2 = WAVESHARE SH8601
 	self->type = args[ARG_type].u_int;
 
     // self->max_width_value etc will be initialized in the rotation later.
@@ -249,13 +257,13 @@ mp_obj_t amoled_AMOLED_make_new(const mp_obj_type_t *type,
 	// set BPP
     switch (self->bpp) {
         case 16:
-            self->colmod_cal = 0x75;
+            self->colmod_cal = 0x55;
             self->fb_bpp = 16;
         break;
 
         case 18:
-            self->colmod_cal = 0x76;
-            self->fb_bpp = 24;
+            self->colmod_cal = 0x66;
+            self->fb_bpp = 18;
         break;
 
         case 24:
@@ -275,7 +283,10 @@ mp_obj_t amoled_AMOLED_make_new(const mp_obj_type_t *type,
         break;
         case 1:
             memcpy(&self->rotations, ORIENTATIONS_RM690B0, sizeof(ORIENTATIONS_RM690B0));
-        break;	
+        break;
+		case 2:
+            memcpy(&self->rotations, ORIENTATIONS_SH8601, sizeof(ORIENTATIONS_SH8601));
+        break;			
 		default:
             mp_raise_ValueError(MP_ERROR_TEXT("Unsupported display type"));
         break;
@@ -341,10 +352,11 @@ STATIC mp_obj_t amoled_AMOLED_init(mp_obj_t self_in)
 			write_spi(self, LCD_FAC_OVSSVOLTAGE, (uint8_t[]) {0x25}, 1);				// SET OVSS voltage level.= -4.0V
 			write_spi(self, LCD_CMD_SWITCHMODE, (uint8_t[]) {0x00}, 1);  				// 0x00 SWITCH TO USER COMMAND
 			write_spi(self, LCD_CMD_COLMOD, (uint8_t[]) { self->colmod_cal }, 1);		// Interface Pixel Format 0x75 16bpp x76 18bpp 0x77 24bpp
-			write_spi(self, LCD_CMD_STE, (uint8_t[]) {0x00, 0x80}, 2);  				// SET TEAR SCANLINE TO N = 0x0080 = 128
+			write_spi(self, LCD_CMD_SETTSCANL, (uint8_t[]) {0x00, 0x80}, 2);  			// SET TEAR SCANLINE TO N = 0x0080 = 128
 			write_spi(self, LCD_CMD_TEON, (uint8_t[]) {0x00}, 1);  						// TEAR ON
 			write_spi(self, LCD_CMD_WRDISBV, (uint8_t[]) {0x00}, 1); 					// WRITE BRIGHTNESS MIN VALUE 0x00
 			write_spi(self, LCD_CMD_SLPOUT, NULL, 0);     								// SLEEP OUT
+			mp_hal_delay_ms(120); 
 			write_spi(self, LCD_CMD_MADCTL, (uint8_t[]) { self->madctl_val,}, 1);		// WRITE MADCTL VALUES
 			write_spi(self, LCD_CMD_DISPON, NULL, 0);									// DISPLAY ON
 			write_spi(self, LCD_CMD_WRDISBV, (uint8_t[]) {0xFF}, 1);					// WRITE MAX BRIGHTNESS VALUE 0xFF 
@@ -362,14 +374,32 @@ STATIC mp_obj_t amoled_AMOLED_init(mp_obj_t self_in)
 			write_spi(self, LCD_CMD_COLMOD, (uint8_t[]) { self->colmod_cal }, 1);		// Interface Pixel Format 0x75 16bpp x76 18bpp 0x77 24bpp 
 			write_spi(self, LCD_CMD_SETDISPMODE, (uint8_t[]) {0x00}, 1); 				// Set DSI Mode to 0x00 = Internal Timmings
 			//	write_spi(self, LCD_CMD_SETSPIMODE, (uint8_t[]) {0xA1}, 1); 			// 0xA1 = 1010 0001, first bit = SPI interface write RAM enable
-			write_spi(self, LCD_CMD_STE, (uint8_t[]) {0x01, 0x66}, 2);  				// SET TEAR SCANLINE TO N = 0x166 = 358
+			write_spi(self, LCD_CMD_SETTSCANL, (uint8_t[]) {0x01, 0x66}, 2);  			// SET TEAR SCANLINE TO N = 0x166 = 358
 			write_spi(self, LCD_CMD_TEON, (uint8_t[]) {0x00}, 1); 						// TE ON
 			write_spi(self, LCD_CMD_WRDISBV, (uint8_t[]) {0x00}, 1); 					// WRITE BRIGHTNESS VALUE 0x00
 			write_spi(self, LCD_CMD_SLPOUT, NULL, 1); 									// SLEEP OUT
+			mp_hal_delay_ms(120); 
 			write_spi(self, LCD_CMD_MADCTL, (uint8_t[]) { self->madctl_val }, 1);		// WRITE MADCTL VALUES
 			write_spi(self, LCD_CMD_DISPON, NULL, 1); 									// DISPLAY ON
 			write_spi(self, LCD_CMD_WRDISBV, (uint8_t[]) {0xFF}, 1); 					// WRITE MAX BRIGHTNESS VALUE 0xFF   
 		 break;
+		 case 2:
+			write_spi(self, LCD_CMD_SLPOUT, NULL, 0);									// SLEEP OUT
+			mp_hal_delay_ms(120);
+			write_spi(self, LCD_CMD_SETTSCANL, (uint8_t[]) {0x01, 0x2C}, 2);			// SET TEAR SCANLINE TO N = 0x012C = 300
+			write_spi(self, LCD_CMD_COLMOD, (uint8_t[]) { self->colmod_cal }, 1);		// Interface Pixel Format 0x55 16bpp x66 18bpp 0x77 24bpp
+			write_spi(self, LCD_CMD_MADCTL, (uint8_t[]) { self->madctl_val,}, 1);		// WRITE MADCTL VALUES
+			write_spi(self, LCD_CMD_TEON, (uint8_t[]) {0x00}, 1);						// TEAR ON
+			write_spi(self, LCD_CMD_WRCTRLD1, (uint8_t[]) {0x20}, 1);					// DISPLAY ON
+			mp_hal_delay_ms(10);
+			write_spi(self, LCD_CMD_CASET, (uint8_t[]) {0x00, 0x00, 0x01, 0x6F}, 4);  	// SET COLUMN START ADRESSE SC = 0x0000 = 0 and EC = 0x016F = 367
+			write_spi(self, LCD_CMD_RASET, (uint8_t[]) {0x00, 0x00, 0x01, 0xBF}, 4);	// SET ROW START ADRESS SP = 0x0000 = 0 and EP = 0x01BF = 447
+			write_spi(self, LCD_CMD_WRDISBV, (uint8_t[]) {0x00}, 1);					// WRITE BRIGHTNESS MIN VALUE 0x00
+			mp_hal_delay_ms(10);
+			write_spi(self, LCD_CMD_DISPON, NULL, 0);									// DISPLAY ON
+			mp_hal_delay_ms(10);
+			write_spi(self, LCD_CMD_WRDISBV, (uint8_t[]) {0xFF}, 1);					// WRITE BRIGHTNESS MAX VALUE 0xFF		
+		break;
 	}
     return mp_const_none;
 }
@@ -1740,6 +1770,155 @@ STATIC mp_obj_t amoled_AMOLED_write(size_t n_args, const mp_obj_t *args) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(amoled_AMOLED_write_obj, 5, 9, amoled_AMOLED_write);
 
+static mp_obj_t amoled_AMOLED_draw(size_t n_args, const mp_obj_t *args) {
+    amoled_AMOLED_obj_t *self = MP_OBJ_TO_PTR(args[0]);
+    char single_char_s[] = {0, 0};
+    const char *s;
+
+    mp_obj_module_t *hershey = MP_OBJ_TO_PTR(args[1]);
+
+    if (mp_obj_is_int(args[2])) {
+        mp_int_t c = mp_obj_get_int(args[2]);
+        single_char_s[0] = c & 0xff;
+        s = single_char_s;
+    } else {
+        s = mp_obj_str_get_str(args[2]);
+    }
+
+    mp_int_t x = mp_obj_get_int(args[3]);
+    mp_int_t y = mp_obj_get_int(args[4]);
+
+    mp_int_t color = (n_args > 5) ? mp_obj_get_int(args[5]) : WHITE;
+
+    mp_float_t scale = 1.0;
+    if (n_args > 6) {
+        if (mp_obj_is_float(args[6])) {
+            scale = mp_obj_float_get(args[6]);
+        }
+        if (mp_obj_is_int(args[6])) {
+            scale = (mp_float_t)mp_obj_get_int(args[6]);
+        }
+    }
+
+    mp_obj_dict_t *dict = MP_OBJ_TO_PTR(hershey->globals);
+    mp_obj_t *index_data_buff = mp_obj_dict_get(dict, MP_OBJ_NEW_QSTR(MP_QSTR_INDEX));
+    mp_buffer_info_t index_bufinfo;
+    mp_get_buffer_raise(index_data_buff, &index_bufinfo, MP_BUFFER_READ);
+    uint8_t *index = index_bufinfo.buf;
+
+    mp_obj_t *font_data_buff = mp_obj_dict_get(dict, MP_OBJ_NEW_QSTR(MP_QSTR_FONT));
+    mp_buffer_info_t font_bufinfo;
+    mp_get_buffer_raise(font_data_buff, &font_bufinfo, MP_BUFFER_READ);
+    int8_t *font = font_bufinfo.buf;
+
+    int16_t from_x = x;
+    int16_t from_y = y;
+    int16_t to_x = x;
+    int16_t to_y = y;
+    int16_t pos_x = x;
+    int16_t pos_y = y;
+    bool penup = true;
+    char c;
+    int16_t ii;
+
+    while ((c = *s++)) {
+        if (c >= 32 && c <= 127) {
+            ii = (c - 32) * 2;
+
+            int16_t offset = index[ii] | (index[ii + 1] << 8);
+            int16_t length = font[offset++];
+            int16_t left = (int)(scale * (font[offset++] - 0x52) + 0.5);
+            int16_t right = (int)(scale * (font[offset++] - 0x52) + 0.5);
+            int16_t width = right - left;
+
+            if (length) {
+                int16_t i;
+                for (i = 0; i < length; i++) {
+                    if (font[offset] == ' ') {
+                        offset += 2;
+                        penup = true;
+                        continue;
+                    }
+
+                    int16_t vector_x = (int)(scale * (font[offset++] - 0x52) + 0.5);
+                    int16_t vector_y = (int)(scale * (font[offset++] - 0x52) + 0.5);
+
+                    if (!i || penup) {
+                        from_x = pos_x + vector_x - left;
+                        from_y = pos_y + vector_y;
+                    } else {
+                        to_x = pos_x + vector_x - left;
+                        to_y = pos_y + vector_y;
+
+                        line(self, from_x, from_y, to_x, to_y, color);
+                        from_x = to_x;
+                        from_y = to_y;
+                    }
+                    penup = false;
+                }
+            }
+            pos_x += width;
+        }
+    }
+
+    return mp_const_none;
+}
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(amoled_AMOLED_draw_obj, 5, 7, amoled_AMOLED_draw);
+
+static mp_obj_t amoled_AMOLED_draw_len(size_t n_args, const mp_obj_t *args) {
+    char single_char_s[] = {0, 0};
+    const char *s;
+
+    mp_obj_module_t *hershey = MP_OBJ_TO_PTR(args[1]);
+
+    if (mp_obj_is_int(args[2])) {
+        mp_int_t c = mp_obj_get_int(args[2]);
+        single_char_s[0] = c & 0xff;
+        s = single_char_s;
+    } else {
+        s = mp_obj_str_get_str(args[2]);
+    }
+
+    mp_float_t scale = 1.0;
+    if (n_args > 3) {
+        if (mp_obj_is_float(args[3])) {
+            scale = mp_obj_float_get(args[3]);
+        }
+        if (mp_obj_is_int(args[3])) {
+            scale = (mp_float_t)mp_obj_get_int(args[3]);
+        }
+    }
+
+    mp_obj_dict_t *dict = MP_OBJ_TO_PTR(hershey->globals);
+    mp_obj_t *index_data_buff = mp_obj_dict_get(dict, MP_OBJ_NEW_QSTR(MP_QSTR_INDEX));
+    mp_buffer_info_t index_bufinfo;
+    mp_get_buffer_raise(index_data_buff, &index_bufinfo, MP_BUFFER_READ);
+    uint8_t *index = index_bufinfo.buf;
+
+    mp_obj_t *font_data_buff = mp_obj_dict_get(dict, MP_OBJ_NEW_QSTR(MP_QSTR_FONT));
+    mp_buffer_info_t font_bufinfo;
+    mp_get_buffer_raise(font_data_buff, &font_bufinfo, MP_BUFFER_READ);
+    int8_t *font = font_bufinfo.buf;
+
+    int16_t print_width = 0;
+    char c;
+    int16_t ii;
+
+    while ((c = *s++)) {
+        if (c >= 32 && c <= 127) {
+            ii = (c - 32) * 2;
+
+            int16_t offset = (index[ii] | (index[ii + 1] << 8)) + 1;
+            int16_t left =  font[offset++] - 0x52;
+            int16_t right = font[offset++] - 0x52;
+            int16_t width = right - left;
+            print_width += width;
+        }
+    }
+
+    return mp_obj_new_int((int)(print_width * scale + 0.5));
+}
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(amoled_AMOLED_draw_len_obj, 3, 4, amoled_AMOLED_draw_len);
 
 /*----------------------------------------------------------------------------------------------------
 Below are JPG related functions.
@@ -2254,6 +2433,8 @@ STATIC const mp_rom_map_elem_t amoled_AMOLED_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_text_len),        MP_ROM_PTR(&amoled_AMOLED_text_len_obj)        },
     { MP_ROM_QSTR(MP_QSTR_write),           MP_ROM_PTR(&amoled_AMOLED_write_obj)           },
     { MP_ROM_QSTR(MP_QSTR_write_len),       MP_ROM_PTR(&amoled_AMOLED_write_len_obj)       },
+    { MP_ROM_QSTR(MP_QSTR_draw),            MP_ROM_PTR(&amoled_AMOLED_draw_obj)            },
+    { MP_ROM_QSTR(MP_QSTR_draw_len),        MP_ROM_PTR(&amoled_AMOLED_draw_len_obj)        },	
     { MP_ROM_QSTR(MP_QSTR_mirror),          MP_ROM_PTR(&amoled_AMOLED_mirror_obj)          },
     { MP_ROM_QSTR(MP_QSTR_swap_xy),         MP_ROM_PTR(&amoled_AMOLED_swap_xy_obj)         },
     { MP_ROM_QSTR(MP_QSTR_set_gap),         MP_ROM_PTR(&amoled_AMOLED_set_gap_obj)         },
