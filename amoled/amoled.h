@@ -52,10 +52,20 @@ extern "C" {
 #define LCD_CMD_COLMOD       0x3A // Defines the format of RGB picture data
 #define LCD_CMD_RAMWRC       0x3C // Memory write continue
 #define LCD_CMD_RAMRDC       0x3E // Memory read continue
-#define LCD_CMD_STE          0x44 // Set tear scanline, tearing effect output signal when display module reaches line N
-#define LCD_CMD_GDCAN        0x45 // Get scanline
+#define LCD_CMD_SETTSCANL    0x44 // Set tear scanline, tearing effect output signal when display module reaches line N
+#define LCD_CMD_GETSCANL     0x45 // Get scanline
 #define LCD_CMD_WRDISBV      0x51 // Write display brightness
 #define LCD_CMD_RDDISBV      0x52 // Read display brightness value
+//Below is specific for SH8601H
+#define LCD_CMD_WRCTRLD1     0x53 // Write CTRL Display 1
+#define LCD_CMD_RDCTRLD1	 0x54 // Read CTRL Display 1
+#define LCD_CMD_WRCTRLD2     0x55 // Write CTRL Display 2
+#define LCD_CMD_RDCTRLD2	 0x56 // Read CTRL Display 2
+#define LCD_CMD_WRCE	 	 0x57 // Write Cde Sunlight Readability Enhancement
+#define LCD_CMD_RDCE	 	 0x58 // Read Cde Sunlight Readability Enhancement
+#define LCD_CMD_HBM_WRDISBV	 0x63 // Write Display Brightness Value in HBM Mode
+#define LCD_CMD_HBM_RDDISBV  0x64 // Read Display Brightness Value in HBM Mode
+#define LCD_CMD_HBMCTL 		 0x66 // HBM Control
 
 #define LCD_CMD_SETHBMMODE  0xB0 // Set High Brightness Mode (only for RM67162)
 #define LCD_CMD_SETDISPMODE 0xC2 // Set DSI Mode
@@ -63,12 +73,37 @@ extern "C" {
 #define LCD_CMD_SWITCHMODE	0xFE // Switch Command Mode
 #define LCD_CMD_READMODE	0xFF // Read Command Status
 
+//RM680B0 and RM67162 factory registers
 #define LCD_FAC_OVSSCONTROL 0x05 // OVSS Control
 #define LCD_FAC_OVSSVOLTAGE 0x73 // OVSS Control
 #define LCD_FAC_MIPI		0x26 // MIPI
 #define LCD_FAC_SPI			0x24 // SPI
 #define LCD_FAC_SWIRE1		0x5A // SWIRE
 #define LCD_FAC_SWIRE2		0x5B // SWIRE
+
+//RM67162 MADCTRL and RGB
+#define RM67162_MADCTL_MY 0x80
+#define RM67162_MADCTL_MX 0x40
+#define RM67162_MADCTL_MV 0x20
+#define RM67162_MADCTL_ML 0x10
+#define RM67162_MADCTL_BGR 0x08
+#define RM67162_MADCTL_MH 0x04
+#define RM67162_MADCTL_RGB 0x00
+
+//RM690B0 MADCTRL and RGB
+#define RM690B0_MADCTL_MY 0x80
+#define RM690B0_MADCTL_MX 0x40
+#define RM690B0_MADCTL_MV 0x20
+#define RM690B0_MADCTL_ML 0x10
+#define RM690B0_MADCTL_BGR 0x08
+#define RM690B0_MADCTL_MH 0x04
+#define RM690B0_MADCTL_RGB 0x00
+
+//SH8601 MADCTRL and RGB (SH8601 does not support rotations)
+#define SH8601_MADCTL_BGR 0x08
+#define SH8601_MADCTL_X_FLIP 0x02 // Flip Horizontal
+#define SH8601_MADCTL_Y_FLIP 0x05 // Flip Vertical
+#define SH8601_MADCTL_RGB 0x00
 
 // Color definitions
 
