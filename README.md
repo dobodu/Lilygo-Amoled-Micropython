@@ -3,8 +3,11 @@
 
 It's dedicated to
 
-- Lilygo T4-S3 AMOLED wired with QSPI
-- Lilygo T-Display S3 AMOLED wired with QSPI
+- Lilygo T4-S3 AMOLED
+- Lilygo T-Display S3 AMOLED
+- Lilygo 1.43-inch SH8601 AMOLED
+- Lilygo 1.75-inch SH8601 AMOLED
+- Waveshare ESP32-S3 1.8inch AMOLED Touch
 
 This Micropython driver is created on behalf of [nspsck](https://github.com/nspsck/RM67162_Micropython_QSPI) RM67162 driver.
 It is also convergent with [russhugues](https://github.com/russhughes/st7789_mpy) ST7789 driver.
@@ -15,10 +18,11 @@ be able to get my micropythons projects working whether on PICO + ST7789 or ESP3
 
 The driver involves a frame buffer of 600x450, requiring 540ko of available ram (T4-S3 version).
 The driver involves a frame buffer of 536x240, requiring 280ko of available ram (TDisplay S3 version).
+In a more general way, requirements are WIDTH x HEIGHT x 2 bytes or ram.
 
-Firmware is build with
-- Micropython 1.23
-- ESP IDF toolchain 5.2
+Latest firmware is build with
+- Micropython 1.25
+- ESP IDF toolchain 5.3
 
 
 Contents:
@@ -51,6 +55,8 @@ The firmware is provided each time when I update this repo.
 - text_len
 - write        variable spacing font
 - write_len
+- draw         hershey vectorial font
+- draw_len
 - fill
 - rect
 - fill_rect
@@ -74,9 +80,8 @@ The firmware is provided each time when I update this repo.
 - As far as I know everything is working as expected
 
 ## To-DO List : 
-- png support
+- add ttf support
 - optimize triangle function
-- optimize what can be optimized
 
 ## Features
 
@@ -86,11 +91,13 @@ The following display driver ICs are supported:
 Supported boards：
 - [LILYGO T4 S3 AMOLED](https://www.lilygo.cc/products/t4-s3)
 - [LILYGO T-DISPLAY S3 AMOLED](https://www.lilygo.cc/products/t-display-s3-amoled)
+- [WAVESHARE ESP32-S3 1.8 AMOLED](https://www.waveshare.com/esp32-s3-touch-amoled-1.8.htm)
 
 | Driver IC | Display IC |    SPI    |   QSPI    |   I8080   |   DPI     |
 | --------- | ---------- | --------- | --------- | --------- | --------- |
 | ESP32-S3  |  RM690B0   |    NO     |   YES     |    NO     |    NO     |
 | ESP32-S3  |  RM67162   |    NO     |   YES     |    NO     |    NO     |
+| ESP32-S3  |  SH8601    |    NO     |   YES     |    NO     |    NO     |
 
 
 ## Documentation
@@ -233,6 +240,12 @@ All drawing functions should be called with this in mind.
 
 - `write_len(bitap_font, s)`
   Returns the string's width in pixels if printed in the specified font.
+
+- `draw(vector_font, s, x, y[, fg, scale])`
+  Draw text to the display using the specified Hershey vector font with the coordinates as the lower-left corner of the text. The foreground color of the text can be set by the optional argument fg.
+
+- `draw_len(vector_font, s[, scale]`
+  Returns the string's width in pixels if drawn with the specified font.
 
 ## Related Repositories
 
