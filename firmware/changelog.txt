@@ -1,3 +1,11 @@
+firmware_2025_05_14.bin
+
+MicroPython Version :  MicroPython v1.25.0-preview.180.g495ce91ca.dirty on 2025-05-04
+ESP-IDF Version : 5.3.2
+BOARD : ESP32S3 microcontroller with 16MB of Flash & Octal-SPIRAM with ESP32S3
+
+===============================================================================
+
 firmware_2025_02_15.bin
 
 MicroPython Version : v1.25.0-preview.180.g495ce91ca.dirty on 2025-02-15
