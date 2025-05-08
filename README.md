@@ -253,7 +253,9 @@ All drawing functions should be called with this in mind.
 
 
 ## Build
-This is only for reference. Since esp-idf v5.0.2, you must state the full path to the cmake file in order for the builder to find it.
+This is only for reference. Since ESP-IDF v5.0.2 to v5.4.1, the path to the cmake files changes.
+The instruction below are working with ESP-IDF v5.4.1 and Micropython 1.25.
+Please note that for now, compilation crashes with Micropython 1.26_preview
 ```Shell
 cd ~
 git clone https://github.com/dobodu/Lilygo-Amoled-Micropython.git
