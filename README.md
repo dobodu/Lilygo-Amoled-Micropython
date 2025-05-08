@@ -260,7 +260,7 @@ git clone https://github.com/dobodu/Lilygo-Amoled-Micropython.git
 
 # to the micropython directory
 cd micropython/port/esp32
-make  BOARD=ESP32_GENERIC_S3 BOARD_VARIANT=FLASH_16M_SPIRAM_OCT USER_C_MODULE=~/Lilygo-Amoled-Micropython/amoled
+make  BOARD=ESP32_GENERIC_S3 BOARD_VARIANT=FLASH_16M_SPIRAM_OCT USER_C_MODULES=~/Lilygo-Amoled-Micropython CFLAGS_EXTRA=-DMODULE_AMOLED_ENABLED=1
 ```
 You may also want to modify the `sdkconfig` before building in case to get the 16MB storage.
 ```Shell
@@ -286,8 +286,7 @@ cd micropython/port/esp32
 # use the editor you prefer
 vim esp32_common.cmake
 ```
-Jump to line 105, or where ever `APPEND IDF_COMPONENTS` is located, add `esp_lcd` to the list should fix this.
-
+Jump to section `APPEND IDF_COMPONENTS` and add `esp_lcd` to the list should fix this.
 
 
 # Note: 
