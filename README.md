@@ -99,6 +99,9 @@ Supported boards：
 | ESP32-S3  |  RM67162   |    NO     |   YES     |    NO     |    NO     |
 | ESP32-S3  |  SH8601    |    NO     |   YES     |    NO     |    NO     |
 
+Demonstration Video :
+- [Amoled Micropython Demo](https://www.youtube.com/watch?v=m3pqW5jGypQ)
+
 
 ## Documentation
 In general, the screen starts at 0 and goes to 599 x 449 for T4-S3 (resp 535 x 239 for T-Display S3), that's a total resolution of 600 x 450 (resp 536 x 240).
