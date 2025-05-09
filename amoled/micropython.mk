@@ -1,0 +1,8 @@
+AMOLED_MOD_DIR := $(USERMOD_DIR)
+
+CFLAGS_USERMOD += -I$(AMOLED_MOD_DIR)
+
+SRC_USERMOD += $(AMOLED_MOD_DIR)/amoled.c
+SRC_USERMOD += $(AMOLED_MOD_DIR)/amoled_qspi_bus.c
+SRC_USERMOD += $(AMOLED_MOD_DIR)/jpg/tjpgd565.c
+SRC_USERMOD += $(AMOLED_MOD_DIR)/mpfile/mpfile.c
