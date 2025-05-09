@@ -17,5 +17,3 @@
 20
 21 # Link our INTERFACE library to the usermod target.
 22 target_link_libraries(usermod INTERFACE usermod_amoled)
-23
-24 micropy_gather_target_properties(usermod_amoled)
