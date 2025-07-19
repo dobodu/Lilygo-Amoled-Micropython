@@ -86,12 +86,15 @@ The firmware is provided each time when I update this repo.
 ## Features
 
 The following display driver ICs are supported:
-- Support for RM690B0 displays
+- RM690B0
+- RM67162
+- SH8601 
 
 Supported boards：
 - [LILYGO T4 S3 AMOLED](https://www.lilygo.cc/products/t4-s3)
 - [LILYGO T-DISPLAY S3 AMOLED](https://www.lilygo.cc/products/t-display-s3-amoled)
 - [WAVESHARE ESP32-S3 1.8 AMOLED](https://www.waveshare.com/esp32-s3-touch-amoled-1.8.htm)
+- [WAVESHARE ESP32-S3 2.41 AMOLED](https://www.waveshare.com/esp32-s3-touch-amoled-2.41.htm)
 
 | Driver IC | Display IC |    SPI    |   QSPI    |   I8080   |   DPI     |
 | --------- | ---------- | --------- | --------- | --------- | --------- |
