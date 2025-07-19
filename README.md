@@ -102,6 +102,38 @@ Supported boards：
 Demonstration Video :
 - [Amoled Micropython Demo](https://www.youtube.com/watch?v=m3pqW5jGypQ)
 
+## Declaration
+
+Given exemple is working on the Waveshare ESP32-S3 AMOLED 2.41"
+
+Beware, sometime the display needs to be awaken by a specific pin (EXI01 AMOLED_EN for this specific device)
+
+```Shell
+import amoled
+
+SPI_PORT = 2
+SPI_BAUD = 80_000_000
+SPI_POLAR = False
+SPI_PHASE = False
+
+FT_CS  = Pin(9,Pin.OUT)   # CHIP SELECT
+TFT_SCK = Pin(10,Pin.OUT)   # SPICLK_P
+TFT_MOSI = None
+TFT_MISO = None
+TFT_RST = Pin(21,Pin.OUT)   # TFT RESET
+TFT_D0  = Pin(11,Pin.OUT)   # D0 QSPI
+TFT_D1  = Pin(12,Pin.OUT)   # D1 QSPI
+TFT_D2  = Pin(13,Pin.OUT)   # D2 QSPI & SPICLK_N
+TFT_D3  = Pin(14,Pin.OUT)   # D3 QSPI
+
+TFT_WIDTH = 600
+TFT_HEIGHT = 450
+
+spi = SPI(SPI_PORT, baudrate = SPI_BAUD, sck=TFT_SCK, mosi=TFT_MOSI, miso=TFT_MISO, polarity=SPI_POLAR, phase=SPI_PHASE)
+panel = amoled.QSPIPanel(spi=spi, data=(TFT_D0, TFT_D1, TFT_D2, TFT_D3),
+            dc=TFT_D1, cs=TFT_CS, pclk=SPI_BAUD, width=TFT_HEIGHT, height=TFT_WIDTH)
+display = amoled.AMOLED(panel, type=1, reset=TFT_RST, bpp=16, auto_refresh= True)
+```
 
 ## Documentation
 In general, the screen starts at 0 and goes to 599 x 449 for T4-S3 (resp 535 x 239 for T-Display S3), that's a total resolution of 600 x 450 (resp 536 x 240).
@@ -148,10 +180,11 @@ All drawing functions should be called with this in mind.
 
   Turn off the backlight, this is equal to `brightness(0)`.
 
-- `refresh()`
+- `refresh([x0,y0,x1,y1])`
 
-  Force refresh of the whole screen. 
-  Use full when i it parameter auto_refresh=false has been used
+  Force refresh of the screen
+  The screen is entirely refresh if no arguments are passed through, otherwise only specifyed area is refreshed
+  Usefull when parameter auto_refresh=false has been used during the display declaration.
 
 - `invert_color()`
 
