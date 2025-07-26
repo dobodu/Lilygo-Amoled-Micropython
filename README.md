@@ -1,5 +1,5 @@
-## Lilygo Amoled Series Micropython firmware with Graphic Support (not LVGL)
-----------------------------------------------------------------------------
+## Lilygo and Waveshare Amoled Series Micropython firmware with Graphic Support (this is not LVGL)
+--------------------------------------------------------------------------------------------------
 
 It's dedicated to
 
