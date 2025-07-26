@@ -144,10 +144,17 @@ All drawing functions should be called with this in mind.
 
 ```Shell
 dir(amoled)
-['__class__', '__name__', 'AMOLED', 'BGR', 'BLACK', 'BLUE', 'CYAN', 'GREEN', 'MAGENTA', 'MONOCHROME', 'QSPIPanel', 'RED', 'RGB', 'WHITE', 'YELLOW', '__dict__']
+['__class__', '__name__', 'AMOLED', 'BGR', 'BLACK', 'BLUE', 'CYAN', 'GREEN', 'MAGENTA', 'MONOCHROME',
+ 'QSPIPanel', 'RED', 'RGB', 'WHITE', 'YELLOW', '__dict__']
 
 dir(amoled.AMOLED)
-['__class__', '__name__', 'write', 'BGR', 'MONOCHROME', 'RGB', '__bases__', '__del__', '__dict__', 'backlight_off', 'backlight_on', 'bitmap', 'brightness', 'bubble_rect', 'circle', 'colorRGB', 'deinit', 'disp_off', 'disp_on', 'draw', 'draw_len', 'fill', 'fill_bubble_rect', 'fill_circle', 'fill_polygon', 'fill_rect', 'fill_trian', 'height', 'hline', 'init', 'invert_color', 'jpg', 'jpg_decode', 'line', 'mirror', 'pixel', 'polygon', 'polygon_center', 'rect', 'refresh', 'reset', 'rotation', 'send_cmd', 'set_gap', 'swap_xy', 'text', 'text_len', 'trian', 'version', 'vline', 'vscroll_area', 'vscroll_start', 'width', 'write_len']
+['__class__', '__name__', 'write', 'BGR', 'MONOCHROME', 'RGB', '__bases__', '__del__', '__dict__',
+ 'backlight_off', 'backlight_on', 'bitmap', 'brightness', 'bubble_rect', 'circle', 'colorRGB', 'deinit',
+ 'disp_off', 'disp_on', 'draw', 'draw_len', 'fill', 'fill_bubble_rect', 'fill_circle', 'fill_polygon',
+ 'fill_rect', 'fill_trian', 'height', 'hline', 'init', 'invert_color', 'jpg', 'jpg_decode', 'line',
+ 'mirror', 'pixel', 'polygon', 'polygon_center', 'rect', 'refresh', 'reset', 'rotation', 'send_cmd',
+ 'set_gap', 'swap_xy', 'text', 'text_len', 'trian', 'version', 'vline', 'vscroll_area', 'vscroll_start',
+ 'width', 'write_len']
 ```
 
 
