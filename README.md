@@ -5,9 +5,10 @@ It's dedicated to
 
 - Lilygo T4-S3 AMOLED
 - Lilygo T-Display S3 AMOLED
-- Lilygo 1.43-inch SH8601 AMOLED
-- Lilygo 1.75-inch SH8601 AMOLED
-- Waveshare ESP32-S3 1.8inch AMOLED Touch
+- Lilygo 1.43 inches SH8601 AMOLED
+- Lilygo 1.75 inches SH8601 AMOLED
+- Waveshare ESP32-S3 1.8 inches AMOLED Touch
+- Waveshare ESP32-S3 2.41 inches AMOLED Touch
 
 This Micropython driver is created on behalf of [nspsck](https://github.com/nspsck/RM67162_Micropython_QSPI) RM67162 driver.
 It is also convergent with [russhugues](https://github.com/russhughes/st7789_mpy) ST7789 driver.
@@ -22,7 +23,7 @@ In a more general way, requirements are WIDTH x HEIGHT x 2 bytes or ram.
 
 Latest firmware is build with
 - Micropython 1.25
-- ESP IDF toolchain 5.3
+- ESP IDF toolchain 5.4.1
 
 
 Contents:
@@ -80,8 +81,7 @@ The firmware is provided each time when I update this repo.
 - As far as I know everything is working as expected
 
 ## To-DO List : 
-- add ttf support
-- optimize triangle function
+- add True Type Font support
 
 ## Features
 
@@ -141,6 +141,15 @@ display = amoled.AMOLED(panel, type=1, reset=TFT_RST, bpp=16, auto_refresh= True
 ## Documentation
 In general, the screen starts at 0 and goes to 599 x 449 for T4-S3 (resp 535 x 239 for T-Display S3), that's a total resolution of 600 x 450 (resp 536 x 240).
 All drawing functions should be called with this in mind.
+
+```Shell
+dir(amoled)
+['__class__', '__name__', 'AMOLED', 'BGR', 'BLACK', 'BLUE', 'CYAN', 'GREEN', 'MAGENTA', 'MONOCHROME', 'QSPIPanel', 'RED', 'RGB', 'WHITE', 'YELLOW', '__dict__']
+
+dir(amoled.AMOLED)
+['__class__', '__name__', 'write', 'BGR', 'MONOCHROME', 'RGB', '__bases__', '__del__', '__dict__', 'backlight_off', 'backlight_on', 'bitmap', 'brightness', 'bubble_rect', 'circle', 'colorRGB', 'deinit', 'disp_off', 'disp_on', 'draw', 'draw_len', 'fill', 'fill_bubble_rect', 'fill_circle', 'fill_polygon', 'fill_rect', 'fill_trian', 'height', 'hline', 'init', 'invert_color', 'jpg', 'jpg_decode', 'line', 'mirror', 'pixel', 'polygon', 'polygon_center', 'rect', 'refresh', 'reset', 'rotation', 'send_cmd', 'set_gap', 'swap_xy', 'text', 'text_len', 'trian', 'version', 'vline', 'vscroll_area', 'vscroll_start', 'width', 'write_len']
+```
+
 
 
 - `amoled.COLOR`
